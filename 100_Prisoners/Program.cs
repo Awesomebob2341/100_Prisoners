@@ -15,22 +15,30 @@ namespace _100_Prisoners
 
             int[] cupboards = RandArr();
             Random rand = new Random();
-            
+
+            int maxGuesses = 50;
+            int guessCount = 0;
+
             for (int i = 0; i < prisoners.Count; i++)
             {
-                for (int j = 0; j < 50; i++)
+                while (guessCount < maxGuesses)
                 {
                     int cupboard = rand.Next(cupboards.Length);
-                    
+
                     if (!prisoners[i].AlreadyChecked(cupboard))
                     {
-                        if (cupboards[j] == prisoners[i].id)
+                        if (prisoners[i].id == cupboards[cupboard])
                         {
                             pass.Add(prisoners[i]);
+                            
+                        }
+                        else if (prisoners[i].CupboardsCheckedCount() == 50 && prisoners[i].id != cupboards[cupboard])
+                        {
+                            return false;
                         }
                         else
                         {
-                            return false;
+                            prisoners[i].AddCupboard(cupboard);
                         }
                     }
                 }
@@ -77,7 +85,28 @@ namespace _100_Prisoners
 
         static void Main(string[] args)
         {
+            List<bool> RandOutcomes = new List<bool>();
+            double randomPass = 0.0;
+            double randomFail = 0.0;
+            double randPercentPass = 0.0;
+            
+            for (int i = 0; i < 100; i++)
+            {
+                RandOutcomes.Add(RandomPlay());
+            }
 
+            for (int i = 0; i < RandOutcomes.Count(); i++)
+            {
+                if (RandOutcomes[i])
+                    randomPass++;
+            }
+
+            randPercentPass = randomPass / (randomPass + randomFail);
+
+            Console.WriteLine("100 sessions were played using a random method. {0} iterations passed, {1} iterations failed. {2}% chance of success",
+                              randomPass, randomFail, randPercentPass);
+
+            Console.ReadKey();
         }
     }
 }
