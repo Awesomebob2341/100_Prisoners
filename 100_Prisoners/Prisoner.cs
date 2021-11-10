@@ -28,5 +28,10 @@ namespace _100_Prisoners
             else
                 return false;
         }
+
+        public int CupboardsCheckedCount()
+        {
+            return cupboardsChecked.Count();
+        }
     }
 }
