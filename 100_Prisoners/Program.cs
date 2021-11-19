@@ -143,7 +143,6 @@ namespace _100_Prisoners
             List<bool> randOutcomes = new List<bool>();
 
             int totalRuns = 1000000;
-            double num = 100.00;
 
             double optPass = 0.0;
             double optFail = 0.0;
