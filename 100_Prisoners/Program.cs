@@ -21,6 +21,7 @@ namespace _100_Prisoners
 
             for (int i = 0; i < prisoners.Count; i++)
             {
+                guessCount = 0;
                 while (guessCount < maxGuesses)
                 {
                     int cupboard = rand.Next(cupboards.Length);
@@ -30,7 +31,7 @@ namespace _100_Prisoners
                         if (prisoners[i].id == cupboards[cupboard])
                         {
                             pass.Add(prisoners[i]);
-                            
+                            guessCount += 50;
                         }
                         else if (prisoners[i].CupboardsCheckedCount() == 50 && prisoners[i].id != cupboards[cupboard])
                         {
@@ -46,10 +47,63 @@ namespace _100_Prisoners
             return true;
         }
 
-        //static bool OptimizedPlay()
-        //{
-        //    int[] cupboards = RandArr();
-        //}
+        static bool OptimizedPlay()
+        {
+            List<Prisoner> pass = new List<Prisoner>();
+            List<Prisoner> prisoners = CreatePrisoners();
+
+            int[] cupboards = RandArr();
+
+            int maxGuesses = 51;
+            int guessCount = 0;
+
+            int cupboard = 0;
+
+            for (int i = 0; i < prisoners.Count(); i++)
+            {
+                guessCount = 0;
+                cupboard = 0;
+
+                while (guessCount < maxGuesses)
+                {
+                    if (guessCount == 0)
+                    {
+                        cupboard = prisoners[i].id;
+
+                        if (prisoners[i].id == cupboards[cupboard])
+                        {
+                            pass.Add(prisoners[i]);
+                            guessCount += 51;
+                        }
+                        else
+                        {
+                            prisoners[i].AddCupboard(cupboard);
+                            guessCount++;
+                        }
+                    }
+                    else if (guessCount > 0)
+                    {
+                        cupboard = cupboards[cupboard];
+
+                        if (prisoners[i].id == cupboards[cupboard])
+                        {
+                            pass.Add(prisoners[i]);
+                            guessCount += 50;
+                        }
+                        else if (prisoners[i].id != cupboards[cupboard] && prisoners[i].CupboardsCheckedCount() >= 50)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            prisoners[i].AddCupboard(cupboard);
+                            guessCount++;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
 
         static List<Prisoner> CreatePrisoners()
         {
@@ -85,26 +139,53 @@ namespace _100_Prisoners
 
         static void Main(string[] args)
         {
-            List<bool> RandOutcomes = new List<bool>();
-            double randomPass = 0.0;
-            double randomFail = 0.0;
+            List<bool> optOutcomes = new List<bool>();
+            List<bool> randOutcomes = new List<bool>();
+
+            int totalRuns = 1000000;
+
+            double optPass = 0.0;
+            double optFail = 0.0;
+            double optPercentPass = 0.0;
+
+            double randPass = 0.0;
+            double randFail = 0.0;
             double randPercentPass = 0.0;
-            
-            for (int i = 0; i < 100; i++)
+
+            for (int i = 0; i < totalRuns; i++)
             {
-                RandOutcomes.Add(RandomPlay());
+                optOutcomes.Add(OptimizedPlay());
             }
 
-            for (int i = 0; i < RandOutcomes.Count(); i++)
+            for (int i = 0; i < totalRuns; i++)
             {
-                if (RandOutcomes[i])
-                    randomPass++;
+                randOutcomes.Add(RandomPlay());
             }
 
-            randPercentPass = randomPass / (randomPass + randomFail);
+            for (int i = 0; i < optOutcomes.Count(); i++)
+            {
+                if (optOutcomes[i])
+                    optPass++;
+                else
+                    optFail++;
+            }
 
-            Console.WriteLine("100 sessions were played using a random method. {0} iterations passed, {1} iterations failed. {2}% chance of success",
-                              randomPass, randomFail, randPercentPass);
+            for (int i = 0; i < randOutcomes.Count(); i++)
+            {
+                if (randOutcomes[i])
+                    randPass++;
+                else
+                    randFail++;
+            }
+
+            optPercentPass = Math.Round(optPass / (optPass + optFail), 2);
+            randPercentPass = randPass / (randPass + randFail);
+
+            Console.WriteLine("{0} sessions were played using the optimized method. {1} iterations passed, {2} iterations failed. {3}% chance of success",
+                              totalRuns, optPass, optFail, optPercentPass);
+
+            Console.WriteLine("{0} sessions were played using a random method. {1} iterations passed, {2} iterations failed. {3}% chance of success",
+                              totalRuns, randPass, randFail, randPercentPass);
 
             Console.ReadKey();
         }
