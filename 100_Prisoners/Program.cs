@@ -143,6 +143,7 @@ namespace _100_Prisoners
             List<bool> randOutcomes = new List<bool>();
 
             int totalRuns = 1000000;
+            double num = 100.00;
 
             double optPass = 0.0;
             double optFail = 0.0;
@@ -178,8 +179,8 @@ namespace _100_Prisoners
                     randFail++;
             }
 
-            optPercentPass = Math.Round(optPass / (optPass + optFail), 2);
-            randPercentPass = randPass / (randPass + randFail);
+            optPercentPass = Math.Round(100 * optPass / totalRuns, 2);
+            randPercentPass = Math.Round(100 * randPass / totalRuns, 2);
 
             Console.WriteLine("{0} sessions were played using the optimized method. {1} iterations passed, {2} iterations failed. {3}% chance of success",
                               totalRuns, optPass, optFail, optPercentPass);
